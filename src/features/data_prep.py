@@ -7,8 +7,6 @@ ROOT_DIRECTORY = os.environ["ROOT_DIRECTORY"]
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
-df = pd.read_csv(ROOT_DIRECTORY + "/data/raw/games.csv")
-
 
 def basic_features(dta):
     onlyr = dta.loc[dta["Rnd"].str.contains("R")]
@@ -49,27 +47,20 @@ def basic_features(dta):
         inplace=True,
     )
     onlyr["rolling_wins"] = (
-        onlyr.groupby(["Team", "game_year"])["M"].cumsum() - onlyr["M"]
+        onlyr.groupby(["Team", "game_year"])["win"].cumsum() - onlyr["win"]
     )
     onlyr["rolling_game_points"] = (
         onlyr.groupby(["Team", "game_year"])["game_points"].cumsum()
         - onlyr["game_points"]
     )
-    onlyr["rolling_for"] = (
-        onlyr.shift(periods=1).groupby(["Team", "game_year"])["F"].cumsum() + 1
-    ) - onlyr.shift(periods=1).groupby(["Team", "game_year"])["F"].cummin()
-    -onlyr.shift(periods=1).groupby(["Team", "game_year"])["F"].cummax()
-    onlyr["rolling_against"] = (
-        onlyr.shift(periods=1).groupby(["Team", "game_year"])["A"].cumsum() + 1
-    ) - onlyr.shift(periods=1).groupby(["Team", "game_year"])["A"].cummin()
-    -onlyr.shift(periods=1).groupby(["Team", "game_year"])["A"].cummax()
-    # onlyr["rolling_against"] = (
-    #     onlyr.groupby(["Team", "game_year"])["A"].cumsum() + 1
-    # ) - onlyr["A"]
+
     onlyr["home_rolling_for"] = (
         onlyr.shift(periods=1).groupby(["Team", "game_year"])["home_for"].cumsum() + 1
     ) - onlyr.shift(periods=1).groupby(["Team", "game_year"])["home_for"].cummin()
     -onlyr.shift(periods=1).groupby(["Team", "game_year"])["home_for"].cummax()
+    onlyr["rolling_for"] = (
+        onlyr.groupby(["Team", "game_year"])["F"].cumsum() + 1
+    ) - onlyr["F"]
     onlyr["rolling_against"] = (
         onlyr.groupby(["Team", "game_year"])["A"].cumsum() + 1
     ) - onlyr["A"]
@@ -80,14 +71,21 @@ def basic_features(dta):
     onlyr["rolling_percentage_1"] = (onlyr["F"].rolling(7).sum() - onlyr["F"]) / (
         onlyr["A"].rolling(7).sum() - onlyr["A"]
     )
-    onlyr["rolling_wins_1"] = onlyr["game_points"].shift(1).rolling(3).sum()
+    onlyr["rolling_wins_1"] = onlyr["game_points"].shift(1).rolling(7).sum()
     onlyr["rolling_wins_2"] = (
-        onlyr["game_points"].shift(1).rolling(6).sum() - onlyr["rolling_wins_1"]
+        onlyr["game_points"].shift(1).rolling(14).sum() - onlyr["rolling_wins_1"]
     )
     onlyr["rolling_wins_3"] = (
-        onlyr["game_points"].shift(1).rolling(9).sum()
+        onlyr["game_points"].shift(1).rolling(21).sum()
         - onlyr["rolling_wins_1"]
         - onlyr["rolling_wins_2"]
+    )
+    onlyr["rolling_M_1"] = onlyr["M"].shift(1).rolling(7).sum()
+    onlyr["rolling_M_2"] = onlyr["M"].shift(1).rolling(14).sum() - onlyr["rolling_M_1"]
+    onlyr["rolling_M_3"] = (
+        onlyr["M"].shift(1).rolling(21).sum()
+        - onlyr["rolling_M_1"]
+        - onlyr["rolling_M_2"]
     )
     # onlyr["rolling_wins_1"] = (
     #     onlyr.shift(periods=1).groupby(["Team"])["M"].rolling(4).sum()
@@ -109,7 +107,10 @@ def basic_features(dta):
     onlyr["rolling_M_median_3"] = (
         onlyr["M"].shift(periods=11).rolling(7).median(method="lower")
     )
-    onlyr["prev_match_M_1"] = onlyr["M"].shift(periods=1).rolling(5).sum()
+    onlyr["rolling_F_sum_1"] = onlyr["F"].shift(periods=1).rolling(10).sum()
+    onlyr["rolling_A_sum_1"] = onlyr["A"].shift(periods=1).rolling(10).sum()
+    onlyr["rolling_M_sum_1"] = onlyr["M"].shift(periods=1).rolling(10).sum()
+    onlyr["prev_match_M_1"] = onlyr["M"].shift(periods=1)
     onlyr["prev_match_M_2"] = onlyr["M"].shift(periods=2)
     onlyr["prev_match_M_3"] = onlyr["M"].shift(periods=3)
     onlyr["prev_match_M_4"] = onlyr["M"].shift(periods=4)
@@ -120,18 +121,17 @@ def basic_features(dta):
     onlyr["prev_match_M_9"] = onlyr["M"].shift(periods=9)
     onlyr["prev_match_M_10"] = onlyr["M"].shift(periods=10)
     onlyr["prev_match_M_11"] = onlyr["M"].shift(periods=11)
-    onlyr["prev_match_M_1"] = onlyr["win"].shift(periods=1)
-    onlyr["prev_match_M_2"] = onlyr["win"].shift(periods=2)
-    onlyr["prev_match_M_3"] = onlyr["win"].shift(periods=3)
-    onlyr["prev_match_M_4"] = onlyr["win"].shift(periods=4)
-    onlyr["prev_match_M_5"] = onlyr["win"].shift(periods=5)
-    onlyr["prev_match_M_6"] = onlyr["win"].shift(periods=6)
-    onlyr["prev_match_M_7"] = onlyr["win"].shift(periods=7)
-    onlyr["prev_match_M_8"] = onlyr["win"].shift(periods=8)
-    onlyr["prev_match_M_9"] = onlyr["win"].shift(periods=9)
-    onlyr["prev_match_M_10"] = onlyr["win"].shift(periods=10)
-    onlyr["prev_match_M_11"] = onlyr["win"].shift(periods=11)
-    onlyr["rolling_M_3"] = onlyr["M"].rolling(16).std() - onlyr["win"]
+    # onlyr["prev_match_M_1"] = onlyr["win"].shift(periods=1)
+    # onlyr["prev_match_M_2"] = onlyr["win"].shift(periods=2)
+    # onlyr["prev_match_M_3"] = onlyr["win"].shift(periods=3)
+    # onlyr["prev_match_M_4"] = onlyr["win"].shift(periods=4)
+    # onlyr["prev_match_M_5"] = onlyr["win"].shift(periods=5)
+    # onlyr["prev_match_M_6"] = onlyr["win"].shift(periods=6)
+    # onlyr["prev_match_M_7"] = onlyr["win"].shift(periods=7)
+    # onlyr["prev_match_M_8"] = onlyr["win"].shift(periods=8)
+    # onlyr["prev_match_M_9"] = onlyr["win"].shift(periods=9)
+    # onlyr["prev_match_M_10"] = onlyr["win"].shift(periods=10)
+    # onlyr["prev_match_M_11"] = onlyr["win"].shift(periods=11)
     onlyr["rolling_games"] = onlyr.groupby(["Team", "game_year"])["win"].cumcount() + 1
     onlyr["rolling_percentage"] = onlyr["rolling_for"] / onlyr["rolling_against"]
     # onlyr['rmc_c'] = onlyr['rmc_c'].fillna(0)
@@ -192,9 +192,15 @@ def ladder_merge(dta):
         # "rolling_A_1",
         "rolling_F_median_1",
         "rolling_A_median_1",
+        "rolling_F_sum_1",
+        "rolling_A_sum_1",
+        "rolling_M_sum_1",
         "rolling_wins_1",
         "rolling_wins_2",
         "rolling_wins_3",
+        "rolling_M_1",
+        "rolling_M_2",
+        "rolling_M_3",
         "prev_match_M_1",
         "rolling_M_median_1",
         "rolling_M_median_2",
@@ -252,7 +258,13 @@ def ladder_merge(dta):
     return final_output
 
 
-output = ladder_merge(basic_features(df))
-# print(output.head(5))
+def process_features():
+    print("Processing features.")
+    df = pd.read_csv(ROOT_DIRECTORY + "/data/raw/games.csv")
+    output = ladder_merge(basic_features(df))
+    output.to_csv(ROOT_DIRECTORY + "/data/processed/processed_features.csv")
+    print("Features ready.")
 
-output.to_csv(ROOT_DIRECTORY + "/data/processed/processed_features.csv")
+
+if __name__ == "__main__":
+    process_features()

@@ -43,5 +43,5 @@ print("Best mean game score: {0:.4g}".format(-automl.best_loss))
 print("Training duration of best run: {0:.4g} s".format(automl.best_config_train_time))
 
 print("Writing model to file")
-with open(ROOT_DIRECTORY + "/models/automl_xgb_4000.pkl", "wb") as f:
+with open(ROOT_DIRECTORY + "/models/automl_lgbm_30_nf.pkl", "wb") as f:
     pickle.dump(automl, f, pickle.HIGHEST_PROTOCOL)
