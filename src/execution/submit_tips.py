@@ -23,7 +23,7 @@ def submit_tips(round_num):
         ROOT_DIRECTORY
         + "/data/scored/scored_2023_"
         + str(round_num)
-        + "_automl_lgbm_30_nf.csv"
+        + "_automl_lgbm_30_nf_state.csv"
     )
 
     time.sleep(1)

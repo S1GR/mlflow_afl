@@ -1,19 +1,19 @@
-Submit_team,Season_team
-Collingwood,Collingwood
-Melbourne,Melbourne
-G_W_Sydney,Greater Western Sydney
-Brisbane,Brisbane Lions
-W_Bulldogs,Western Bulldogs
-W_Coast,West Coast
-Carlton,Carlton
-Geelong,Geelong
-Adelaide,Adelaide
-P_Adelaide,Port Adelaide
-Hawthorn,Hawthorn
-St_Kilda,St Kilda
-Sydney,Sydney
-Richmond,Richmond
-Gold_Coast,Gold Coast
-Kangaroos,North Melbourne
-Essendon,Essendon
-Fremantle,Fremantle
+Submit_team,Season_team,State
+Collingwood,Collingwood,VIC
+Melbourne,Melbourne,VIC
+G_W_Sydney,Greater Western Sydney,NSW
+Brisbane,Brisbane Lions,QLD
+W_Bulldogs,Western Bulldogs,VIC
+W_Coast,West Coast,WA
+Carlton,Carlton,VIC
+Geelong,Geelong,VIC
+Adelaide,Adelaide,SA
+P_Adelaide,Port Adelaide,SA
+Hawthorn,Hawthorn,VIC
+St_Kilda,St Kilda,VIC
+Sydney,Sydney,NSW
+Richmond,Richmond,VIC
+Gold_Coast,Gold Coast,QLD
+Kangaroos,North Melbourne,VIC
+Essendon,Essendon,VIC
+Fremantle,Fremantle,WA
