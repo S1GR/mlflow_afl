@@ -11,6 +11,7 @@ pd.options.mode.chained_assignment = None  # default='warn'
 def basic_features(dta):
     onlyr = dta.loc[dta["Rnd"].str.contains("R")]
     onlyr["game_year"] = pd.DatetimeIndex(onlyr["Date"]).year
+    onlyr["p_date"] = pd.DatetimeIndex(onlyr["Date"])
     onlyr["round_num"] = onlyr["Rnd"].str.replace("R", "").astype("int")
     onlyr["win"] = 0
     # onlyr['R'] = onlyr['R'].fillna(0)
@@ -46,6 +47,7 @@ def basic_features(dta):
         ascending=[True, True, True],
         inplace=True,
     )
+    onlyr["since_last_game"] = (onlyr["p_date"] - onlyr["p_date"].shift(1)).dt.days
     onlyr["rolling_wins"] = (
         onlyr.groupby(["Team", "game_year"])["win"].cumsum() - onlyr["win"]
     )
@@ -141,6 +143,12 @@ def basic_features(dta):
         + onlyr["round_num"].astype("str")
     )
     onlyr = onlyr.fillna(0)
+    mapper = pd.read_csv(ROOT_DIRECTORY + "/data/mapping_tables/submit_mapper.csv")[
+        ["Season_team", "State"]
+    ]
+    onlyr = pd.merge(
+        onlyr, mapper, left_on="Team", right_on="Season_team", how="left"
+    ).drop(columns="Season_team")
     return onlyr
 
 
@@ -221,7 +229,9 @@ def ladder_merge(dta):
         "rolling_percentage_1",
         "home_for",
         "home_against",
+        "since_last_game",
         "early",
+        "State",
         "mid",
     ]
     feat = dta[col_list]
@@ -242,6 +252,11 @@ def ladder_merge(dta):
         by=["Team", "game_year", "round_num"],
         ascending=[True, True, True],
         inplace=True,
+    )
+    merged["same_state"] = 0
+    merged.loc[merged["State"] == merged["State_joined"], "same_state"] = 1
+    merged["rest_days_compared"] = (
+        merged["since_last_game"] - merged["since_last_game_joined"]
     )
     merged = merged.loc[merged["T"] == "H"]
     merged["game_year"] = pd.DatetimeIndex(merged["Date"]).year

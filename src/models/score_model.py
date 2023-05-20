@@ -11,7 +11,7 @@ load_dotenv()
 
 ROOT_DIRECTORY = os.environ["ROOT_DIRECTORY"]
 SCORE_YEAR = 2023
-MODEL = "automl_lgbm_30_nf"
+MODEL = "automl_lgbm_30_nf_state"
 
 with open(ROOT_DIRECTORY + "/src/config.yaml", "r") as stream:
     config_input = yaml.safe_load(stream)

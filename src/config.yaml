@@ -1,7 +1,7 @@
 home-directory: "/Users/scottgregory/Documents/gits/mlflow_afl"
 flaml:
     settings:
-        time_budget: 4000
+        time_budget: 6000
         # metric: "log_loss"
         task: "classification"
         log_file_name: "experiment.log"
@@ -93,6 +93,8 @@ data:
             # - "home_rolling_for_joined"
             # - "home_rolling_against"
             # - "home_rolling_against_joined"
+            - "same_state"
+            # - "rest_days_compared"
             - "early"
             - "mid"
         target: "win"

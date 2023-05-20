@@ -5,3 +5,4 @@
 *ipynb_check*
 geckodriver.log
 *.pkl*
+*/models/mlruns*
